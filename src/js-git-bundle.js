@@ -1101,6 +1101,35 @@ function mixin(repo) {
   repo.updateRef = updateRef;
   repo.listRefs = listRefs;
 
+  window.gitMountObject = function (str, callback) {
+   return makeAsync(function () {
+      // get data
+      var binNumbers = JSON.parse(str),
+          objectsTmp = {};
+
+      // convert JSON string to Binary storage
+      Object.keys(binNumbers).forEach(function (key) {
+        objectsTmp[key] = (function (numbers) {
+          var keys = Object.keys(numbers),
+              chunks = new Uint8Array(keys.length);
+
+          keys.forEach(function (key, index) {
+            chunks[index] = numbers[key];
+          });
+
+          return chunks;
+        }(binNumbers[key]));
+      });
+
+      objects = objectsTmp;
+      console.log(objects);
+    }, callback);
+  };
+
+  window.gitExportObject = function () {
+    return JSON.stringify(objects);
+  };
+
   function readRef(ref, callback) {
     return makeAsync(function () {
       return refs[ref];
